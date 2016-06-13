@@ -16,8 +16,30 @@
 //= require bootstrap-sprockets
 //= require_tree 
 
-var myApp = angular.module("myApp", []);
+var myApp = angular.module('myApp', []);
 var localhost = "http://localhost:3000";
+
+// myApp.config(function($routeProvider){
+//     $routeProvider
+//         .when("/home/index",
+//         {
+//             templateUrl: "<%= home_index_path  %>",
+//             controller: "orderController"
+//         })
+//         .when(localhost+"/customers",
+//         {
+//             templateUrl: "/customers/index.html.erb",
+//             controller: "customerController"
+//         })
+//         .when("/orders",
+//         {
+//             templateUrl: ' <%= asset_path("orders/order.html.erb") %> ',
+//             controller: "OrderController"
+//         })
+//         // .when("/inventory/index")
+//         // .when("/bike_models")
+//         // .when("/home/userlist")
+// });
 
 var dateFormat = function () {
     var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
@@ -130,4 +152,5 @@ dateFormat.i18n = {
 Date.prototype.format = function (mask, utc) {
     return dateFormat(this, mask, utc);
 };
+
 

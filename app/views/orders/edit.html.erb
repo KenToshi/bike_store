@@ -1,16 +1,22 @@
 <script type="text/javascript">
-              $(function() {
-          $("#productHistoryStartingDate" ).datepicker();
-          $("#productHistoryEndingDate" ).datepicker();
-        });
+    $("#NewOrderItem").ready(function() {
+      orderID = <%= @order.id %>;
+      $("#orderDetailShippingDate" ).datepicker();
+      retrieveDataDetailView(orderID)
+      if(<%= !@order.pre_order? %>) $(".payment-section").css("display","block");
+      
+});
 </script>
+
+
+
 <%= javascript_include_tag "angular/controller/orderController" %>
 <%= javascript_include_tag "angular/controller/cartController" %>
 
 
-<input type="hidden" disabled id="orderItemOrderID"  value="<%= @order.id %>" />
+<input type="hidden" disabled id="orderItemOrderID"  value="<%= @order.id %>" onload="retrieveDataDetailView(<%= @order.id %>)" />
 
-<div id="NewOrderItem" ng-controller="NewOrderItemController" onload="getProductData(); " >
+<div id="NewOrderItem" ng-controller="NewOrderItemController" >
     
     <!-------------------------CUSTOMER-------------------------------> 
     <div class="row customer-section">
@@ -99,6 +105,7 @@
         <div class="col-md-8 tabs">
             <div class="tabsView">
                 <form role="form" id="addOrderItems">
+                    
                     <div class="row">
                         <div class="col-md-2" >
                             <button id="up-to-customer" class="btn btn-info" onclick="upToCustomerSection()">
@@ -110,17 +117,22 @@
                             
                         </div>
                     </div>    
-                    
+                    <% if @order.pre_order? %>
                     <div class="row">
                         <div class="col-md-2" >
                             Bike Name: 
                         </div>
                         <div class="col-md-4 item-to-add">
                             <select id="orderItemProductID" class="form-control" onchange="getProductData()">
+                            <option value="">Select Product</option>
                               <%= Product.all.order(:bike_name).each do |product| %>
                                 <option value="<%= product.id%>"><%= product.bike_name%></option>
                               <% end %>
                             </select>
+                        </div>
+                        <div class="col-md-6 item-to-add">
+                            <span id="order_item_product_id_header" style="color: red;" hidden>Product </span>
+                            <span id="order_item_product_id_alert" style="color: red;"></span>
                         </div>
                     </div>   
     
@@ -141,7 +153,7 @@
                             Qty: 
                         </div>
                         <div class="col-md-4 item-to-add">
-                            <input type="number" class="form-control" id="orderItemQty" minimum="1"/>
+                            <input type="number" class="form-control" id="orderItemQty" onchange="calculateTotalPrice()"/>
                         </div>
                         <div class="col-md-6 item-to-add">
                             <span id="order_item_qty_header" style="color: red;" hidden>Qty </span>
@@ -166,13 +178,13 @@
                             
                         </div>
                         <div class="col-md-4 item-to-add">
-                          <input type="button" value="Add To Cart" id="orderItemAddToCart" class="btn btn-success" onclick="addToCart()">
+                          <input type="button" value="Add To Cart" id="orderItemAddToCart" class="btn btn-success" onclick="addToCart();" >
                         </div>
                         <div class="col-md-6 item-to-add">
                            
                         </div>
                     </div>   
-    
+                    <% end %>
                      <div class="row" ng-controller="NewOrderItemController" >
                         <div class="col-md-12" >
                             
@@ -184,32 +196,26 @@
                                   <th>Product Name</th> 
                                   <th>Price</th>
                                   <th>Qty</th>
+                                  <th>Current Qty</th>
                                   <th>Total Price</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
-                              <tbody >
-                                <form>
-                                  <tr ng-repeat="i in order_items">
-                                    <td id="OrderItemID" style="display:none"> {{i.id}} </td>
-                                    <td id="ProductName" > {{i.bike_name}} </td>
-                                    <td id="Price" > {{i.price}} </td>
-                                    <td id="Qty" > {{i.qty}} </td>
-                                    <td id="Total Price" > {{i.price*i.qty}} </td>
-                                  <td> <input type="button" value="Delete" data-toggle="modal" data-target="#deleteConfirm" onclick="delId = $(this).parent().parent().find('.OrderItemID').html()"></td> 
-                                </tr>
-                              </form>
+                              <tbody  class="cart-item">
+     
                             </tbody>
                             <tfoot>
                               <tr>
-                                <td colspan="5" class="text-center">Data retrieved from database bike_store table bike_list</td>
+                                <td colspan="5" class="text-center">Customer Cart</td>
                               </tr>
                             </tfoot>
                           </table>
                         </div><!--end of .table-responsive-->
-                            <input type="button" name="Save Order" id="saveOrderButton" value="Save" class="btn btn-success" onclick="saveOrder()">
-                            <input type="button" name="Confirm Order" id="confirmOrderButton" value="Next" class="btn btn-success" onclick="confirmOrder()">
-                            
+                            <div style="text-align:right; padding-right: 20px;"><h4>Grand Total: $ <span class="grand-total"></span></h4></div>
+                            <% if @order.pre_order? %>
+                            <input type="button" name="Save Order" id="saveOrderButton" value="Save" class="btn btn-success" onclick="saveOrderInformation()">
+                            <input type="button" name="Confirm Order" id="confirmOrderButton" value="Confirm" class="btn btn-success" onclick="confirmOrder()">
+                            <% end %>
                         </div>
                     </div> 
               </form>
@@ -221,7 +227,7 @@
     </div>
 
 
-    <div class="row">
+    <div class="row payment-section">
         <div class="col-md-2">
                 
         </div>
@@ -243,14 +249,67 @@
                     
                     <div class="row">
                         <div class="col-md-2" >
-                            
+                            Shipping Address
                         </div>
-                        <div class="col-md-4">
-                            
+                        <div class="col-md-4 payment-shipping-section">
+                            <input type="text" class="form-control" id="orderDetailsShippingAddress" value="<%= @order.shipping_address.nil? ? @order.customer.customer_address : @order.shipping_address%>"/>
                         </div>
-                        <div class="col-md-6 item-to-add">
+                        <div class="col-md-6 payment-shipping-section">
                            
                         </div>
+                    </div> 
+                    
+                     <div class="row">
+                        <div class="col-md-2" >
+                            Shipping Method
+                        </div>
+                        <div class="col-md-4 payment-shipping-section">
+                            <select id="orderDetailShippingMethod" class="form-control">
+                              
+                                 <option value="">Select Shipping Method</option>
+
+                                 <option value="on_the_spot" <%= @order.on_the_spot? ? "Selected" : ""%>> On The Spot</option>
+                                 <option value="delivery" <%= @order.delivery? ? "Selected" : ""%>> Delivery</option>
+                                 
+                            </select>
+                        </div>
+                        <div class="col-md-6 payment-shipping-section">
+                           
+                        </div>
+                    </div> 
+                    
+                    <div class="row">
+                        <div class="col-md-2" >
+                            Shipping Date 
+                                             
+                        </div>
+                        <div class="col-md-4 payment-shipping-section">
+                            <input type="text" class="form-control" id="orderDetailShippingDate" value="<%= @order.shipping_date.present? ? @order.shipping_date.tomorrow : '' %>"/>
+                        </div>
+                        <div class="col-md-6 payment-shipping-section">
+                           
+                        </div>
+                    </div> 
+                    
+                     <div class="row">
+                        <div class="col-md-2" >
+                            
+                        </div>
+                        <div class="col-md-10 payment-shipping-section">
+                            <% if(!@order.is_paid) %>
+                            <button class="btn btn-success confirm-payment" data-toggle="modal" data-target="#paymentConfirm" >Confirm payment</button>
+                            <% else %>
+                            <button class="btn btn-success confirm-payment" onclick="generateInvoice(<%= @order.id %>)">Generate Invoice</button>
+                            <% end %>
+                            
+                            <% if(!@order.is_delivered) %>
+                            <button class="btn btn-warning confirm-delivery" data-toggle="modal" data-target="#deliveryConfirm">Confirm delivery</button>
+                            <% else %>
+                            <button class="btn btn-warning confirm-delivery" onclick="generateLetterOfTravel(<%= @order.id %>)">Generate Letter of Travel</button>
+                            <% end %>
+                            <button class="btn btn-primary save" onclick="saveOrderInformation()">Save</button>
+                        </div>
+                        
                     </div> 
                     
                 </form>
@@ -260,26 +319,48 @@
             
         </div>
     </div>
-     <!---------------------------END OF PAYMENT----------------------->
 
 </div>
  
 
-<div class="modal fade" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmLabel">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="paymentConfirm" tabindex="-1" role="dialog" aria-labelledby="paymentConfirmLabel">
+    <div class="modal-dialog vertical-align-center" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
+          <h4 class="modal-title" id="myModalLabel">Payment Confirmation</h4>
         </div>
         <div class="modal-body">
-          Are you Sure Want to Delete This Order Item?
+          ARE YOU FUCKING SURE HAD RETRIEVED THE MONEY ??
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="deleteOrderItem()">Delete</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmPayment()">Yes</button>
         </div>
       </div>
     </div>
   </div>
   
+  <div class="modal fade" id="deliveryConfirm" tabindex="-1" role="dialog" aria-labelledby="deliveryConfirmLabel">
+    <div class="modal-dialog vertical-align-center" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Delivery Confirmation</h4>
+        </div>
+        <div class="modal-body">
+          ARE YOU FUCKING SURE HAD SENT THE BIKE ??
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="confirmDelivery()">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script>
+    var date = new Date($("#orderDetailShippingDate").val());
+
+    $("#orderDetailShippingDate").val(dateFormat(date, "mm/dd/yyyy"));
+</script>

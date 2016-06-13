@@ -21,11 +21,15 @@
 
 #sidebar{
 	box-sizing:border-box;
-	background-color:white;
+	background-color:#4E2D2D!important;
 	margin:0;
 	padding:0;
 	height:1000px;
 	width:12%;
+}
+
+.fixed {
+    position: fixed;
 }
 
 .container{
@@ -120,11 +124,12 @@ td, th{
 }
 
 a:hover{
-    background-color:transparent!important;
+    background-color:#f5f5f5!important;
 }
 
 a{
     text-decoration: none!important;
+    color: black;
 }
 
 a:visited{
@@ -189,10 +194,13 @@ a:visited{
 	margin-bottom:10px;
 }
 
+.payment-shipping-section{
+	margin-bottom:10px;
+}
 .item-section{
 	display: none;
 }
 
 .payment-section{
-	display: block;
+	display: none;
 }

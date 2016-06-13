@@ -2,6 +2,8 @@ class StocksController < ApplicationController
   before_action :set_stock, only: [:show, :edit, :update, :destroy]
   before_action :constructor
 
+  skip_before_filter :verify_authenticity_token
+
   def constructor
     
   end

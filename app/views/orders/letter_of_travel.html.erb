@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>Invoice #<%=@order.id%></title>
+
+  <%= wicked_pdf_stylesheet_link_tag 'application.css', media: 'all', 'data-turbolinks-track' => true %>
+  <%= wicked_pdf_stylesheet_link_tag "pdf.css" -%>
+</head>
+<body>
+
+    <div class="container">
+        
+
+        <div class="row">
+            <div class="page-header pull-left">
+                <h1 style="text-align: left">Hantze Shop</h1>
+                <h4><small>Jl.Hantze 52</small></h4>
+                <h4><small>Kebayoran Baru, South Jakarta</small></h4>  
+                <h4><small>Telp: 021-1234098</small></h4>  
+            </div>
+
+            <div class="page-header pull-right">
+
+                <br/>
+                <div class="panel-heading" style="background-color:darkgrey;">
+                    <b>Delivery Details</b>
+                </div>
+
+                <div class="panel-body">
+                    <b>Name:</b> <%= @order.customer.customer_name %><br/>
+                    <b>Delivery Method:</b> <%= @order.shipping_method=="on_the_spot" ? "On the spot" : "Company delivery"%><br/>
+                    <b>Delivery Address:</b> <%= @order.shipping_address%><br/>                    
+                    <b>Delivery Date:</b> <%= @order.shipping_date %>
+                </div>
+
+            </div>
+
+             <div class="container">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <h2>Invoice for Purchase #<%=@order.id%></h2>
+                        </div>
+                        <hr>
+                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" style="background-color:darkgrey;">
+                                <h3 class="text-center" style="background-color:darkgrey;"><strong>Order Summary</strong></h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <td><strong>Item Name</strong></td>
+                                                <td class="text-center"><strong>Item Price</strong></td>
+                                                <td class="text-center"><strong>Item Quantity</strong></td>
+                                                <td class="text-right"><strong>Total</strong></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% total = 0 %>
+                                            <% @order.order_item.each do |item| %>
+                                            <% 
+                                                subtotal = item.price*item.qty
+                                                total += subtotal
+                                            %>
+                                            <tr>
+                                                <td><%=item.product.bike_name%></td>
+                                                <td class="text-center">$ <%=item.price%></td>
+                                                <td class="text-center"><%=item.qty%></td>
+                                                <td class="text-right">$ <%=subtotal%></td>
+                                            </tr>
+                                            <% end %>
+                                            <tr>
+                                                <td class="emptyrow"><br/></td>
+                                                <td class="emptyrow"></td>
+                                                <td class="emptyrow"></td>
+                                                <td class="emptyrow"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="emptyrow"></td>
+                                                <td class="emptyrow"></td>
+                                                <td class="emptyrow text-center"><strong>Grand Total</strong></td>
+                                                <td class="emptyrow text-right"><strong>$ <%= total %></strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="text-right">
+                                    <h4>Jakarta,...................</h4>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="table-responsive">
+                                <table class="table table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td class="text-center"><strong>Buyer</strong></td>
+                                            <td class="text-center"><strong>Sender</strong></td>
+                                            <td class="text-center"><strong>Manager</strong></td>
+                                        </tr>
+                                    </thead>
+
+
+                                    <tr>
+                                        <td class="text-center" style="padding-top: 100px; border:0;">_________________</td>
+                                        <td class="text-center" style="padding-top: 100px; border:0;">_________________</td>
+                                        <td class="text-center" style="padding-top: 100px; border:0;">_________________</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -34,6 +34,8 @@ gem 'bootstrap-sass', '~> 3.3.6'
 gem 'autoprefixer-rails'
 gem 'angular-ng-table-rails'
 gem 'font-awesome-sass', '~> 4.6.2'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 # Gemfile
 source 'https://rails-assets.org' do

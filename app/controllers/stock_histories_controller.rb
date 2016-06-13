@@ -1,6 +1,8 @@
 class StockHistoriesController < ApplicationController
   before_action :set_stock_history, only: [:show, :edit, :update, :destroy]
 
+  skip_before_filter :verify_authenticity_token
+
   # GET /stock_histories
   # GET /stock_histories.json
   # def index

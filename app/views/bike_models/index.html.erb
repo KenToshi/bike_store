@@ -3,11 +3,11 @@
 <div ng-controller="modelController">
   <h2> Bike Models </h2>
 
-  <input type="button" data-toggle="collapse" value="New Model" data-target="#addNewModel"></br></br>
+  <input type="button" data-toggle="collapse" class="btn btn-info" value="New Model" data-target="#addNewModel"></br></br>
   <form id="addNewModel" class="collapse">
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
      Model Name: <input type="text" id="newModelName"/></br></br>
-     <input type="submit" name="Submit" id="submitNewModel"></br></br>
+     <input type="submit" name="Submit" class="btn btn-success" id="submitNewModel"></br></br>
   </form>
 
   <div id="reviseData" style="display: none">
@@ -32,31 +32,51 @@
     </form>
   </div>
 
+<form>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon"><i class="fa fa-search"></i></div>
+      <input type="text" class="form-control" placeholder="Search Everything Here" ng-model="searchModel">
+    </div>      
+  </div>
+</form>
   <!-- table pertama -->  
   <div id="table-responsive-custom">
     <table summary="This table shows file inside database" class="table table-bordered table-hover">
       <caption class="text-center">{{title}}</caption>
       <thead>
         <tr>
-          <th>Model ID</th>
-          <th>Model Name</th>
+          <th>
+            <a ng-click="sortType = 'id'; sortReverse = !sortReverse">
+              Model ID <span ng-show="sortType == '' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'id' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'id' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+            </th>
+          <th>
+            <a ng-click="sortType = 'bike_model_name'; sortReverse = !sortReverse">
+            Model Name
+              <span ng-show="sortType == 'bike_model_name' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'bike_model_name' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+            </th>
           <th colspan="1">Actions</th>
         </tr>
       </thead>
       <tbody >
         <form>
-          <tr ng-repeat="m in bike_models">
+          <tr ng-repeat="m in bike_models| orderBy:sortType:sortReverse | filter:searchModel">
             <td class="BikeModelID"> {{m.id}} </td>
             <td class="BikeModelName"> {{m.bike_model_name}} </td>         
             <td> 
-             <input type="button" value="Edit" class="viewProductDetail" onclick="editModelDetail(this)">
+             <input type="button" class="btn btn-default"value="Edit" class="viewProductDetail" onclick="editModelDetail(this)">
             </td>
         </tr>
       </form>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="10" class="text-center">Data retrieved from database bike_store table bike_list</td>
+        <td colspan="10" class="text-center">Data retrieved from Back-end Ruby on Rails</td>
       </tr>
     </tfoot>
   </table>
@@ -65,30 +85,27 @@
 
 <p id="notice"><%= notice %></p>
 
-<h1>Listing Bike Models</h1>
+<!--<h1>Listing Bike Models</h1>-->
 
-<table>
-  <thead>
-    <tr>
-      <th>Bike Model</th>
-      <th>Model name</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<!--<table>-->
+<!--  <thead>-->
+<!--    <tr>-->
+<!--      <th>Bike Model</th>-->
+<!--      <th>Model name</th>-->
+<!--      <th colspan="3"></th>-->
+<!--    </tr>-->
+<!--  </thead>-->
 
-  <tbody>
-    <% @bike_models.each do |bike_model| %>
-      <tr>
-        <td><%= bike_model.id %> </td>
-        <td><%= bike_model.bike_model_name %></td>
-        <td><%= link_to 'Show', bike_model %></td>
-        <td><%= link_to 'Edit', edit_bike_model_path(bike_model) %></td>
-        <td><%= link_to 'Destroy', bike_model, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<!--  <tbody>-->
+<!--    <% @bike_models.each do |bike_model| %>-->
+<!--      <tr>-->
+<!--        <td><%= bike_model.id %> </td>-->
+<!--        <td><%= bike_model.bike_model_name %></td>-->
+<!--        <td><button class="btn btn-info" style="margin-right: 5px;"><%= link_to 'Show', bike_model %></button></td>-->
+<!--        <td><button class="btn btn-warning" style="margin-right: 5px;"><%= link_to 'Edit', edit_bike_model_path(bike_model) %></button></td>-->
+<!--        <td><button class="btn btn-danger" style="margin-right: 5px;"><%= link_to 'Destroy', bike_model, method: :delete, data: { confirm: 'Are you sure?' } %></button></td>-->
+<!--      </tr>-->
+<!--    <% end %>-->
+<!--  </tbody>-->
+<!--</table>-->
 
-<br>
-
-<%= link_to 'New Bike model', new_bike_model_path %>

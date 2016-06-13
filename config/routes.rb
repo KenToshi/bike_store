@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   get 'kucings/tikus'
 
-  get 'home/index'
+  get 'home/index' => 'home#index'
   get 'home/login'
   get 'home/logout'
   get 'home/signup'
@@ -32,8 +32,12 @@ Rails.application.routes.draw do
   get 'customers/index'
 
   get 'orders/index'
-  get 'orders/payment'
-  get 'orders/deliver'
+  get 'orders/:id/retrieve_cart' => 'orders#retrieve_cart'
+  post 'orders/verify_order'
+  post 'orders/confirm_payment'
+  post 'orders/confirm_delivery'
+  get 'orders/:id/invoice' => 'orders#invoice'
+  get 'orders/:id/letter_of_travel' => 'orders#letter_of_travel'
 
   get 'order_items/index'
   get 'bike_models/index'

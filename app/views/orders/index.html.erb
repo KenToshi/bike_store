@@ -62,12 +62,18 @@
       </thead>
       <tbody >
         <form>
-          <tr ng-repeat="o in orders | orderBy:sortType:sortReverse | filter:searchCustomer " >
-            <td id="CustomerID" > {{o.id}} </td>
-            <td id="CustomerName" > {{o.customer.customer_name}} </td>
-            <td id="ShippingAddress" > {{o.is_paid}} </td>
-            <td id="ShippingMethod" > {{o.is_delivered}} </td>
-            <td id="Status" > {{o.status}} </td>
+          <tr ng-repeat="o in orders | orderBy:sortType:sortReverse | filter:searchCustomer" >
+            <td class="OrderID" >{{o.id}}</td>
+            <td class="CustomerName" > {{o.customer.customer_name}} </td>
+            <td class="IsPaid" >  {{o.is_paid}} </td>
+            <td class="IsDelivered" > {{o.is_delivered}} </td>
+            <td class="Status" > {{o.status}} </td>
+            <td class="Action"> 
+              <input type="button" value="Detail" class="btn btn-default editCustomer" onclick="editOrder(this)">
+              <% if ((@current_user!=nil) && (@current_user.user_type)) == "Admin" %>
+               <input type="button" value="Delete" class="btn btn-danger deleteCustomer" onclick="deleteOrder(this)" > 
+               <% end %>
+            </td>
           <!-- <td> <button ng-click="edit(p.productBikeID);">Edit</button> </td>
           <td > <input type="button" value="Save" class="saveBike" > </td>
           <td> <input type="button" value="Delete" class="deleteBike"> </td> -->

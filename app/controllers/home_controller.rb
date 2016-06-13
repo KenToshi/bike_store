@@ -1,7 +1,8 @@
 class HomeController < ApplicationController
 
   before_action :set_user, only: [:update, :delete]
-
+  skip_before_filter :verify_authenticity_token
+  
   def index
     @orders = Order.all
   end
@@ -71,19 +72,17 @@ class HomeController < ApplicationController
 
   def authentication
   	# routes & view required
-  	
   	@user = User.authenticate(user_params[:username], user_params[:password])
-    
+
   	if(@user) # if user found
   		session[:user_id] = @user.id
       respond_to do |format|
-        format.html { redirect_to home_index_path }
-    		format.json { render json: @user }
-        flash.now[:notice] = @user.username || "Test"
-
+    		format.json { render json: @user, status: :ok }
       end
    	else # if user not found
-  		redirect_to request.referer, :notice => "User not found!"
+      respond_to do |format|
+        format.json { render json: {errors: "Username or Password is not found"}, status: :unprocessable_entity}
+      end
   	end
   end
 

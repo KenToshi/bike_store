@@ -10,7 +10,7 @@
   enum status: [:pre_order, :active_order, :finished, :cancelled]
   enum shipping_method: [:on_the_spot, :delivery]
 
-  accepts_nested_attributes_for :customer
+  accepts_nested_attributes_for :customer, :order_item
   
   def set_initial_status
     self.is_paid = false

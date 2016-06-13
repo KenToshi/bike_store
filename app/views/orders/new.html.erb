@@ -10,7 +10,6 @@
 
 <div id="NewOrderItem" ng-controller="NewOrderItemController" onload="getProductData()" >
     
-    <!-------------------------CUSTOMER-------------------------------> 
     <div class="row customer-section">
         <div class="col-md-2">
             
@@ -102,10 +101,7 @@
             </div>
         </div>
     </div>
-    
-    <!-----------------------END OF CUSTOMER-------------------------------> 
-        
-    <!-------------------------ITEM------------------------------->      
+
     <div class="row item-section">
         <div class="col-md-2">
                 
@@ -131,6 +127,7 @@
                         </div>
                         <div class="col-md-4 item-to-add">
                             <select id="orderItemProductID" class="form-control" onchange="getProductData()">
+                                <option value="">Select Product</option>
                               <%= Product.all.order(:bike_name).each do |product| %>
                                 <option value="<%= product.id%>"><%= product.bike_name%></option>
                               <% end %>
@@ -155,7 +152,8 @@
                             Qty: 
                         </div>
                         <div class="col-md-4 item-to-add">
-                            <input type="number" class="form-control" id="orderItemQty" minimum="1"/>
+                            <input type="number" class="form-control"  value="Add to cart" id="orderItemQty" minimum="1" onchange="calculateTotalPrice()"/>
+
                         </div>
                         <div class="col-md-6 item-to-add">
                             <span id="order_item_qty_header" style="color: red;" hidden>Qty </span>
@@ -180,7 +178,7 @@
                             
                         </div>
                         <div class="col-md-4 item-to-add">
-                          <input type="button" name="Add To Cart" id="orderItemAddToCart" class="btn btn-success" onclick="addToCart()">
+                          <input type="button" name="Add To Cart" value="Tai kucing" id="orderItemAddToCart" class="btn btn-success" onclick="addToCart()">
                         </div>
                         <div class="col-md-6 item-to-add">
                            
@@ -216,7 +214,7 @@
                             </tbody>
                             <tfoot>
                               <tr>
-                                <td colspan="5" class="text-center">Data retrieved from database bike_store table bike_list</td>
+                                <td colspan="5" class="text-center">Data retrieved from Back-end Ruby on Rails</td>
                               </tr>
                             </tfoot>
                           </table>
@@ -233,9 +231,7 @@
             
         </div>
     </div>
-     <!---------------------------END OF ITEM----------------------->
-     
-     <!-------------------------PAYMENT------------------------------->      
+
     <div class="row payment-section">
         <div class="col-md-2">
                 
@@ -258,14 +254,55 @@
                     
                     <div class="row">
                         <div class="col-md-2" >
-                            
+                            Shipping Address
                         </div>
-                        <div class="col-md-4">
-                            
+                        <div class="col-md-4 payment-shipping-section">
+                            <input type="text" class="form-control" id="shippingAddress"/>
                         </div>
-                        <div class="col-md-6 item-to-add">
+                        <div class="col-md-6 payment-shipping-section">
                            
                         </div>
+                    </div> 
+                    
+                     <div class="row">
+                        <div class="col-md-2" >
+                            Shipping Method
+                        </div>
+                        <div class="col-md-4 payment-shipping-section">
+                            <select id="shippingMethod" class="form-control">
+                              
+                                 <option value="onTheSpot">On The Spot</option>
+                                 <option value="delivery">Delivery</option>
+                                 
+                            </select>
+                        </div>
+                        <div class="col-md-6 payment-shipping-section">
+                           
+                        </div>
+                    </div> 
+                    
+                    <div class="row">
+                        <div class="col-md-2" >
+                            Shipping Date
+                        </div>
+                        <div class="col-md-4 payment-shipping-section">
+                            <input type="date" class="form-control" id="shippingDate"/>
+                        </div>
+                        <div class="col-md-6 payment-shipping-section">
+                           
+                        </div>
+                    </div> 
+                    
+                     <div class="row">
+                        <div class="col-md-2" >
+                            
+                        </div>
+                        <div class="col-md-10 payment-shipping-section">
+                            <button class="btn btn-success confirm-payment" data-toggle="modal" data-target="#paymentConfirm" >Confirm payment</button>
+                            <button class="btn btn-warning confirm-delivery" data-toggle="modal" data-target="#deliveryConfirm">Confirm delivery</button>
+                            <button class="btn btn-primary save">Save</button>
+                        </div>
+                        
                     </div> 
                     
                 </form>
@@ -275,24 +312,41 @@
             
         </div>
     </div>
-     <!---------------------------END OF PAYMENT----------------------->
 
 </div>
  
 
-<div class="modal fade" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmLabel">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="paymentConfirm" tabindex="-1" role="dialog" aria-labelledby="paymentConfirmLabel">
+    <div class="modal-dialog vertical-align-center" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
+          <h4 class="modal-title" id="myModalLabel">Payment Confirmation</h4>
         </div>
         <div class="modal-body">
-          Are you Sure Want to Delete This Order Item?
+          ARE YOU FUCKING SURE HAD RETRIEVED THE MONEY ??
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="deleteOrderItem()">Delete</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" onclick="">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="deliveryConfirm" tabindex="-1" role="dialog" aria-labelledby="deliveryConfirmLabel">
+    <div class="modal-dialog vertical-align-center" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Delivery Confirmation</h4>
+        </div>
+        <div class="modal-body">
+          ARE YOU FUCKING SURE HAD SENT THE BIKE ??
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" onclick="">Yes</button>
         </div>
       </div>
     </div>

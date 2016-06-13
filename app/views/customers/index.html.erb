@@ -2,7 +2,7 @@
 
 <div ng-controller="customerController">
   <h2> Add New Customer </h2>
-  <input type="button" data-toggle="collapse" value="New Customer" data-target="#addNewCustomer"></br></br>
+  <input type="button" class="btn btn-info" data-toggle="collapse" value="New Customer" data-target="#addNewCustomer"></br></br>
   <form id="addNewCustomer" class="collapse">    
      Customer Name: <input type="text" id="customerName"/>
      <span id="add_customer_name_header" style="color: red;" hidden>Customer Name </span>
@@ -19,7 +19,7 @@
      <span id="add_customer_phone_alert" style="color: red;"></span>
      </br></br>
 
-     <input type="submit" name="Submit" id="submitNewCustomer"></br></br>
+     <input type="submit" class="btn btn-success" name="Submit" id="submitNewCustomer"></br></br>
   </form>
 
   <!-- Update -->
@@ -57,12 +57,20 @@
       </div>
       <div class="form-group">        
         <div class="col-sm-offset-2 col-sm-6">
-          <button type="button" id="buttonReviseCustomer" class="btn btn-default" onclick="editCustomer()">Submit</button>
+          <button type="button" id="buttonReviseCustomer" class="btn btn-success" onclick="editCustomer()">Submit</button>
         </div>
       </div>
     </form>
   </div>
 
+  <form>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon"><i class="fa fa-search"></i></div>
+      <input type="text" class="form-control" placeholder="Search Everything Here" ng-model="searchCustomer">
+    </div>      
+  </div>
+</form>
 
   <!-- table pertama -->  
    <div id="table-responsive-customer">
@@ -70,25 +78,37 @@
       <caption class="text-center">{{title}}</caption>
       <thead>
         <tr>
-          <th>Customer ID</th>
-          <th>Customer name</th>
+          <th>
+            <a ng-click="sortType = 'id'; sortReverse = !sortReverse">
+              Customer ID <span ng-show="sortType == '' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'id' && !sortReverse" class="fa fa-caret-down"></span>
+              <span ng-show="sortType == 'id' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+            </th>
+          <th>
+            <a ng-click="sortType = 'customer_name'; sortReverse = !sortReverse">
+            Customer name
+             <span ng-show="sortType == 'customer_name' && !sortReverse" class="fa fa-caret-down"></span>
+             <span ng-show="sortType == 'customer_name' && sortReverse" class="fa fa-caret-up"></span>
+            </a>
+            </th>
           <th>Customer address</th>
           <th>Customer phone</th>
           <th colspan="1"></th>
         </tr>
       </thead>
-      <tbody ng-repeat="c in customers"> <!--kaya pake foreach ton -->
+      <tbody ng-repeat="c in customers | orderBy:sortType:sortReverse | filter:searchCustomer"> <!--kaya pake foreach ton -->
         <tr>
           <td class="CustomerID">{{c.id}}</td>
           <td class="CustomerName">{{c.customer_name}}
           <td class="CustomerAddress">{{c.customer_address}}</td>
           <td class="CustomerPhone">{{c.customer_phone}}</td>
-          <td> <input type="button" value="Edit" class="editCustomer" onclick="showCustomerData(this)" > </td>          
+          <td> <input type="button" value="Edit" class="btn btn-default editCustomer" onclick="showCustomerData(this)" > </td>          
         </tr>
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="5" class="text-center">Data retrieved from database bike_store table customer</td>
+          <td colspan="5" class="text-center">Data retrieved from Back-end Ruby on Rails</td>
         </tr>
       </tfoot>
     </table>

@@ -1,11 +1,19 @@
 <%= javascript_include_tag "angular/controller/orderController" %>
 <%= javascript_include_tag "angular/controller/stockController" %>
 
-<h2> Sales (Tar ada diagram expenditure & income) </h2>
-
  <div ng-controller="orderController">
   <h2> New Orders </h2>
   <!-- table pertama -->  
+  
+  <form>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon"><i class="fa fa-search"></i></div>
+      <input type="text" class="form-control" placeholder="Search Everything Here" ng-model="searchOrder">
+    </div>      
+  </div>
+</form>
+
   <div id="table-responsive-custom">
     <table summary="This table shows file inside database" class="table table-bordered table-hover">
       <caption class="text-center">{{title}}</caption>
@@ -20,11 +28,11 @@
       </thead>
       <tbody >
         <form>
-          <tr ng-repeat="o in orders">
+          <tr ng-repeat="o in orders | orderBy:sortType:sortReverse | filter:searchOrder ">
             <td id="CustomerID" > {{o.customer.customer_name}} </td>
             <td id="ShippingAddress" > {{o.shipping_address}} </td>
             <td id="ShippingMethod" > {{o.shipping_method}} </td>
-            <td id="OrderDate" > {{o.order_time}} </td>
+            <td id="OrderDate" > {{o.order_date}} </td>
             <td id="Status" > {{o.status}} </td>
           <!-- <td> <button ng-click="edit(p.productBikeID);">Edit</button> </td>
           <td > <input type="button" value="Save" class="saveBike" > </td>
@@ -34,7 +42,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="5" class="text-center">Data retrieved from database bike_store table bike_list</td>
+        <td colspan="5" class="text-center">Data retrieved from Back-end Ruby on Rails</td>
       </tr>
     </tfoot>
   </table>
@@ -43,6 +51,16 @@
 
  <div ng-controller="stockController">
   <h2> Stocks </h2>
+  
+  <form>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-addon"><i class="fa fa-search"></i></div>
+      <input type="text" class="form-control" placeholder="Search Everything Here" ng-model="searchProduct">
+    </div>      
+  </div>
+</form>
+
   <!-- table pertama -->  
   <div id="table-responsive-custom">
     <table summary="This table shows file inside database" class="table table-bordered table-hover">
@@ -59,13 +77,13 @@
       </thead>
       <tbody >
         <form>
-          <tr ng-repeat="s in stocks">
-            <td id="CustomerID" > {{s.id}} </td>
-            <td id="ShippingAddress" > {{s.product.bike_name}} </td>
-            <td id="OrderDate" > {{s.product.bike_model.bike_model_name}} </td>
-            <td id="Status" > {{s.qty}} </td>
-            <td id="OrderDate" > {{s.product.price}} </td>
-            <td id="Status" > {{s.product.bike_size}} </td>
+          <tr ng-repeat="s in stocks | orderBy:sortType:sortReverse | filter:searchProduct">
+            <td id="bikeID" > {{s.id}} </td>
+            <td id="bikeName" > {{s.product.bike_name}} </td>
+            <td id="bikeModelName" > {{s.product.bike_model.bike_model_name}} </td>
+            <td id="bikeQty" > {{s.qty}} </td>
+            <td id="bikePrice" > {{s.product.price}} </td>
+            <td id="bikeSize" > {{s.product.bike_size}} </td>
           <!-- <td> <button ng-click="edit(p.productBikeID);">Edit</button> </td>
           <td > <input type="button" value="Save" class="saveBike" > </td>
           <td> <input type="button" value="Delete" class="deleteBike"> </td> -->
@@ -74,7 +92,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="5" class="text-center">Data retrieved from database bike_store table bike_list</td>
+        <td colspan="5" class="text-center">Data retrieved from Back-end Ruby on Rails</td>
       </tr>
     </tfoot>
   </table>

@@ -99,3 +99,24 @@ function changePassword(){
 		}
 });
 }
+
+function authenticateUser(){
+	var username = $('#login-username').val();
+	var password = $('#login-password').val();
+
+	$.ajax({
+		url: localhost+"/home/authentication.json",
+		type: 'POST',
+		data: {
+			'user[username]': username,
+			'user[password]': password
+		},
+		success: function (returnData){
+			window.location = localhost+"/home/index";
+		},
+		error: function (statusText, jqXHR, returnText){
+			var errorMessage = JSON.parse(statusText.responseText).errors;
+			$("#login_error_message").html(errorMessage);		
+		}
+	});
+}

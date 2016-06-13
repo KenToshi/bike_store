@@ -2,6 +2,8 @@ class OrderItemsController < ApplicationController
   before_action :set_order_item, only: [:edit, :update, :destroy]
   before_action :load_products, only: [:new, :update, :edit]
 
+  skip_before_filter :verify_authenticity_token
+
   # GET /order_items
   # GET /order_items.json
   def index
@@ -34,66 +36,103 @@ class OrderItemsController < ApplicationController
     product =  Product.find_by_id(order_item_params[:product_id])
     qty = order_item_params[:qty].to_i
 
-    if(!OrderItem.exists?(:order_id => order.id, :product_id => product.id))
-    @order_item = OrderItem.new()
+    if (product)
+      if (order.pre_order?)
 
-    price = product.price
+        if(!OrderItem.exists?(:order_id => order.id, :product_id => product.id))
+          
+            @order_item = OrderItem.new()
 
-    # masukin dalam datanya
-    @order_item.order_id = order.id
-    @order_item.product_id = product.id
-    @order_item.qty = qty
-    @order_item.price = price
+            price = product.price
 
-      respond_to do |format|
-        if @order_item.save
-          format.json { render :show, status: :created}
-        else
-          format.json { render json: {errors: @order_item.errors} , status: :unprocessable_entity }
+            # masukin dalam datanya
+            @order_item.order_id = order.id
+            @order_item.product_id = product.id
+            @order_item.qty = qty
+            @order_item.price = price
+
+            respond_to do |format|
+
+              if @order_item.save
+                puts "XYYXY"
+                format.json { render :show, status: :created}
+              else
+                puts @order_item.errors
+                format.json { render json: {errors: @order_item.errors} , status: :unprocessable_entity }
+              end
+
+            end
+
+          else # if the product existed in the cart
+
+            @order_item = OrderItem.find_by(:order_id => order.id, :product_id => product.id)
+            price = @order_item.product.price
+
+            @order_item.qty = qty
+            @order_item.price = price
+
+            respond_to do |format|
+              if @order_item.save
+                format.json { render :show, status: :created}
+              else
+                format.json { render json: {errors: @order_item.errors} , status: :unprocessable_entity}
+              end
+
+            end
+
+          end
+      else # the order is already verified 
+
+        respond_to do |format|
+          format.json { render json: {errors: "The order is already verified"} , status: :unprocessable_entity }        
         end
       end
 
-    else # if the product existed in the cart
-
-      @order_item = OrderItem.find_by(:order_id => order.id, :product_id => product.id)
-      price = @order_item.product.price
-
-      @order_item.qty = qty
-      @order_item.price = price
-
+    else # product not found 
       respond_to do |format|
-        if @order_item.save
-          format.json { render :show, status: :created}
-        else
-          format.json { render json: {errors: @order_item.errors} , status: :unprocessable_entity}
-        end
+        format.json {render json: {errors: {product_id: "cannot be empty"}}, status: :unprocessable_entity}
       end
     end
+    
 
   end
 
   # PATCH/PUT /order_items/1
   # PATCH/PUT /order_items/1.json
-  def update
-    respond_to do |format|
-      if @order_item.update(order_item_params)
-        format.html { redirect_to @order_item, notice: 'Order item was successfully updated.' }
-        format.json { render :show, status: :ok, location: @order_item }
-      else
-        format.html { render :edit }
-        format.json { render json: @order_item.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def update
+  #   respond_to do |format|
+  #     if @order_item.update(order_item_params)
+  #       format.html { redirect_to @order_item, notice: 'Order item was successfully updated.' }
+  #       format.json { render :show, status: :ok, location: @order_item }
+  #     else
+  #       format.html { render :edit }
+  #       format.json { render json: @order_item.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   # DELETE /order_items/1
   # DELETE /order_items/1.json
   def destroy
-    @order_item.destroy
-    respond_to do |format|
-      format.html { redirect_to order_items_url, notice: 'Order item was successfully destroyed.' }
-      format.json { head :no_content }
+    order_item = OrderItem.find_by_id(params[:id])
+    if(order_item)
+      order = Order.find_by_id(order_item.order)
+      if order.pre_order? # the order haven't verified
+        order_item.destroy
+        respond_to do |format|
+          format.json { render json: {message: "Order Item successfully deleted!"}, status: :ok }
+        end
+      else # the order is already verified
+        respond_to do |format|
+          format.json { render json: {message: "Cannot delete verified order!"}, status: :unprocessable_entity }
+        end
+      end
+    else
+      respond_to do |format|
+          format.json { render json: {message: "Order Item not found"}, status: :unprocessable_entity }
+      end
     end
+    
   end
 
   private

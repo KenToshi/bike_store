@@ -1,6 +1,7 @@
 class BikeModelsController < ApplicationController
   before_action :set_bike_model, only: [:show, :edit, :update, :destroy]
-
+  skip_before_filter :verify_authenticity_token
+  
   # GET /bike_models
   # GET /bike_models.json
   def index
